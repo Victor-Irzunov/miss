@@ -1,65 +1,91 @@
+import GirlsSection from "@/components/Girls/GirlsSection";
+import RunningText from "@/components/RunningText/RunningText";
 import Image from "next/image";
+
+
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main
+      className="min-h-[200vh]"
+      style={{
+        backgroundImage: [
+          "radial-gradient(1200px 800px at 15% 85%, rgba(152, 104, 44, 0.88) 0%, rgba(152, 104, 44, 0.58) 40%, rgba(152, 104, 44, 0) 70%)",
+          "radial-gradient(900px 700px at 92% 8%, rgba(34, 74, 52, 0.70) 0%, rgba(34, 74, 52, 0.28) 45%, rgba(34, 74, 52, 0) 72%)",
+          "radial-gradient(130% 100% at 50% 0%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 55%)",
+          "linear-gradient(180deg, #141826 5%, #1C1F2E 42%, #564733 100%)",
+        ].join(", "),
+        backgroundRepeat: "no-repeat, no-repeat, no-repeat, no-repeat",
+        backgroundAttachment: "scroll, scroll, scroll, scroll",
+        backgroundSize: "cover, cover, cover, cover",
+        backgroundPosition: "center, center, center, center",
+      }}
+    >
+      <section
+        aria-label="Главный экран"
+        className="relative"
+      >
+        <div
+          className="
+            xz:block sd:hidden
+            relative
+            w-full
+            min-h-screen
+          
+            bg-no-repeat bg-center bg-cover
+          "
+          style={{
+            backgroundImage: "url('/fon/fon-mobile-2.webp')",
+          }}
+        >
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div
+          className="
+            xz:hidden sd:block
+            relative
+            w-full
+            min-h-screen
+            bg-cover
+          "
+          style={{
+            backgroundImage: "url('/fon/fon.webp')",
+          }}
+        >
+          <RunningText />
+          <div className='container mx-auto relative h-screen'>
+            <div className='flex justify-between items-center h-screen'>
+              <div className=''>
+                <Image src='/fon/woman.webp' alt='Девушка' width={600} height={550} className="-ml-10" />
+                <div className='mt-9 pl-4 uppercase text-white'>
+                  <p className='text-2xl'>
+                    Минск | Осень 2025
+                  </p>
+                  <p className='text-4xl mt-3'>
+                    онлайн
+                  </p>
+                </div>
+              </div>
+              <div className=''>
+                <Image src='/fon/lady.webp' alt='Девушка' width={250} height={500} className="absolute right-0 top-40" />
+              </div>
+            </div>
+          </div>
+
+          <div className='flex justify-center pb-9 -mt-20'>
+            <div className='bg-black/45 rounded-lg py-5 px-4 flex items-center space-x-3'>
+              <div className='bg-white/10 backdrop-blur-md p-2 rounded-s-sm'>
+                <Image src='/svg/telegram-white.svg' alt='Телеграмм' width={50} height={50} />
+              </div>
+              <p className='text-white/80 text-xl'>
+                За подробностями пишите в директ
+              </p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <GirlsSection />
+    </main >
   );
 }

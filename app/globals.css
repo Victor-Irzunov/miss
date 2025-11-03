@@ -1,8 +1,30 @@
 @import "tailwindcss";
+/* @plugin "daisyui"; */
+@plugin "daisyui" {
+  themes: light --default;
+}
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #040200;
+   --color-primary: #A705D0;
+  --color-secondary: #6AC1B7;
+}
+
+@theme {
+  --breakpoint-xz: 20rem;      /* 320px - iPhone SE */
+  --breakpoint-xy: 23.5rem;    /* 376px - iPhone 6/7/8 */
+  --breakpoint-xx: 25.9375rem; /* 415px - iPhone X/11 Pro */
+  --breakpoint-xs: 30rem;      /* 480px */
+  --breakpoint-xm: 35.9375rem; /* 575px */
+  --breakpoint-ss: 38.75rem;   /* 620px */
+  --breakpoint-sm: 48rem;      /* 768px */
+  --breakpoint-sd: 61.9375rem; /* 991px */
+  --breakpoint-md: 66.25rem;   /* 1060px */
+  --breakpoint-lg: 75rem;      /* 1200px */
+  --breakpoint-xl: 106.25rem;  /* 1700px */
+  --breakpoint-2xl: 100rem;    /* 1600px */
+  --breakpoint-3xl: 120rem;    /* 1920px */
 }
 
 @theme inline {
@@ -14,8 +36,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #2F2F2F;
   }
 }
 
@@ -24,3 +46,177 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Уважение настроек доступности: отключаем анимацию, если пользователь против */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Базовая высота хедера (мобайл/десктоп) как CSS-переменная */
+:root {
+  --header-h: 72px;     /* мобильный header */
+}
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 88px;   /* десктопный header */
+  }
+}
+
+/* Отступ при прокрутке к секции с id, чтобы заголовки не прятались под шапкой */
+[id] {
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
+
+/* Опционально: чуть мягче «подпрыгивание» при ручной прокрутке на iOS */
+html, body {
+  -webkit-overflow-scrolling: touch;
+}
+
+.fon{
+	background-image: url('/fon/fon.webp');
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 0;
+}
+
+.fon:after{
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	background: #000;
+	opacity: .4;
+	z-index: -1;
+}
+
+
+
+@keyframes ring {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(15deg); }
+  20% { transform: rotate(-10deg); }
+  30% { transform: rotate(15deg); }
+  40% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-ring {
+  animation: ring 1.5s infinite;
+  display: inline-block;
+}
+
+.striped-shining-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.striped-shining-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    75deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 20%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  transform: rotate(45deg);
+  animation: shining 4s infinite linear;
+}
+
+@keyframes shining {
+  0% {
+    transform: translateX(-150%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(150%) rotate(45deg);
+  }
+}
+
+@keyframes pulse-scale {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.animate-pulse-scale {
+	animation: pulse-scale 2.3s ease-in-out infinite;
+}
+
+
+ @keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 100s linear infinite;
+}
+
+
+.spin-image {
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+ .outline-text {
+          color: transparent;                /* без заливки */
+          -webkit-text-stroke-width: 3px;    /* толщина контура (desktop) */
+          -webkit-text-stroke-color: rgba(255, 255, 255, 0.4); /* цвет контура */
+          text-shadow: none;
+        }
+        @media (max-width: 768px) {
+          .outline-text {
+            -webkit-text-stroke-width: 1.5px; /* потоньше на мобильном */
+          }
+        }
+        /* Фолбэк, если вдруг нет поддержки webkit-stroke: делаем псевдоконтур через тень */
+        @supports not (-webkit-text-stroke: 1px white) {
+          .outline-text {
+            color: rgba(0, 0, 0, 0); /* прозрачная заливка */
+            text-shadow:
+              1px 0 0 rgba(255, 255, 255, 0.8),
+              -1px 0 0 rgba(255, 255, 255, 0.8),
+              0 1px 0 rgba(255, 255, 255, 0.8),
+              0 -1px 0 rgba(255, 255, 255, 0.8);
+          }
+        }
