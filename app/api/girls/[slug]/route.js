@@ -1,39 +1,53 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+// один Prisma на процесс
+const prisma = globalThis.__prisma || new PrismaClient();
+if (!globalThis.__prisma) globalThis.__prisma = prisma;
 
 export async function GET(_req, ctx) {
   try {
-    // В новых Next `params` — это Promise
-    const { slug } = await ctx.params;
+    // ⬇️ ВАЖНО: в App Router `params` — Promise, его нужно await-нуть
+    const { slug = "" } = (ctx?.params && typeof ctx.params.then === "function")
+      ? (await ctx.params) || {}
+      : ctx?.params || {};
 
-    if (!slug || typeof slug !== "string") {
-      return NextResponse.json({ ok: false, message: "Bad slug" }, { status: 400 });
+    if (!slug) {
+      return NextResponse.json({ ok: false, message: "slug required" }, { status: 400 });
     }
 
-    const item = await prisma.girl.findUnique({
+    const girl = await prisma.girl.findUnique({
       where: { slug },
-      select: {
-        id: true,
-        slug: true,
-        firstName: true,
-        lastName: true,
-        city: true,
-        age: true,
-        mainImage: true,
-        images: true,
-        description: true,
+      include: {
+        _count: { select: { votes: true } },
       },
     });
 
-    if (!item) {
+    if (!girl) {
       return NextResponse.json({ ok: false, message: "Not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ ok: true, item });
+    // Приводим ответ к стабильному формату
+    const item = {
+      id: girl.id,
+      slug: girl.slug,
+      firstName: girl.firstName,
+      lastName: girl.lastName,
+      city: girl.city,
+      age: girl.age,
+      description: girl.description,
+      mainImage: girl.mainImage,
+      images: Array.isArray(girl.images) ? girl.images : [],
+      videos: Array.isArray(girl.videos) ? girl.videos : [], // ✅ видео массивом
+      category: girl.category,
+      createdAt: girl.createdAt,
+      updatedAt: girl.updatedAt,
+      votesCount: girl._count?.votes ?? 0, // ✅ количество голосов
+    };
+
+    return NextResponse.json({ ok: true, item }, { status: 200 });
   } catch (e) {
     console.error("GET /api/girls/[slug] error:", e);
-    return new NextResponse("Server error", { status: 500 });
+    return NextResponse.json({ ok: false }, { status: 500 });
   }
 }

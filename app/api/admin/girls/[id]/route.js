@@ -1,5 +1,5 @@
-// /app/api/admin/girls/[id]/route.js — UPDATE/DELETE с авто-уникализацией slug (исключая текущий id)
-import { PrismaClient } from "@prisma/client";
+// /app/api/admin/girls/[id]/route.js
+import { PrismaClient, GirlCategory } from "@prisma/client";
 import { NextResponse } from "next/server";
 import multer from "multer";
 import fs from "fs";
@@ -40,6 +40,23 @@ async function ensureUniqueSlugExcept(base, excludeId) {
   }
 }
 
+function coerceVideos(input) {
+  try {
+    let arr = [];
+    if (Array.isArray(input)) {
+      arr = input;
+    } else if (typeof input === "string") {
+      arr = JSON.parse(input || "[]");
+    }
+    const cleaned = (Array.isArray(arr) ? arr : [])
+      .map((s) => String(s || "").trim())
+      .filter(Boolean);
+    return Array.from(new Set(cleaned));
+  } catch {
+    return [];
+  }
+}
+
 export async function PUT(req, ctx) {
   try {
     const { id: idRaw } = await ctx.params;
@@ -51,14 +68,29 @@ export async function PUT(req, ctx) {
     const pre = await req.formData();
     const useJson = pre.get("imagesJson");
 
+    // ВИДЕО: поддержка videosJson и множественных полей videos[]
+    const videosJson = pre.get("videosJson");
+    const multipleVideos = pre.getAll("videos");
+    const videos = multipleVideos?.length
+      ? coerceVideos(multipleVideos)
+      : coerceVideos(typeof videosJson === "string" ? videosJson : "[]");
+
     const data = {
       firstName: pre.get("firstName") || undefined,
       lastName: pre.get("lastName") || undefined,
       city: pre.get("city") || undefined,
       age: pre.get("age") ? Number(pre.get("age")) : undefined,
       description: pre.get("description") || undefined,
-      slug: pre.get("slug") || undefined, // пока черновик — ниже нормализуем/уникализируем
+      slug: pre.get("slug") || undefined,
+      videos, // <— перезаписываем массив видео целиком
     };
+
+    if (pre.has("category")) {
+      const rawCategory = (pre.get("category") || "").toString().toUpperCase();
+      if (rawCategory && rawCategory in GirlCategory) {
+        data["category"] = rawCategory;
+      }
+    }
 
     let mainImage;
     let images;
@@ -101,10 +133,9 @@ export async function PUT(req, ctx) {
       if (!mainImage && images?.length) mainImage = images[0];
     }
 
-    if (mainImage) data.mainImage = mainImage;
-    if (images) data.images = images;
+    if (mainImage) data["mainImage"] = mainImage;
+    if (images) data["images"] = images;
 
-    // если пришёл slug — нормализуем и делаем уникальным (исключая текущую запись)
     if (typeof data.slug === "string") {
       const base = data.slug.trim()
         ? data.slug
@@ -112,7 +143,11 @@ export async function PUT(req, ctx) {
       data.slug = await ensureUniqueSlugExcept(base, id);
     }
 
-    const updated = await prisma.girl.update({ where: { id }, data });
+    const updated = await prisma.girl.update({
+      where: { id },
+      data,
+      include: { categoryWinner: true },
+    });
     return NextResponse.json({ ok: true, item: updated });
   } catch (e) {
     console.error("PUT /api/admin/girls/[id] error:", e);

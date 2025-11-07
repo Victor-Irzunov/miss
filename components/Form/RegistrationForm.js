@@ -1,4 +1,3 @@
-// /components/Form/RegistrationForm.jsx
 "use client";
 
 import { registration } from "@/http/userAPI";
@@ -93,19 +92,19 @@ const RegistrationForm = ({ setIsActive, search }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* email */}
-          <div className="form-control">
+          <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Логин (почта)</span>
               <span className="label-text-alt text-gray-400">Обязательное поле</span>
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <RiMailLine className="opacity-60" />
+            <label className="input input-bordered flex items-center gap-2 w-full">
+              <RiMailLine className="opacity-60 shrink-0" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="grow"
+                className="grow w-full min-w-0"
                 autoComplete="email"
                 placeholder="name@example.com"
                 required
@@ -114,20 +113,20 @@ const RegistrationForm = ({ setIsActive, search }) => {
           </div>
 
           {/* password */}
-          <div className="form-control">
+          <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Пароль</span>
               <span className="label-text-alt text-gray-400">Обязательное поле</span>
             </label>
-            <div className="relative">
-              <label className="input input-bordered flex items-center gap-2 pr-10">
-                <RiLock2Line className="opacity-60" />
+            <div className="relative w-full">
+              <label className="input input-bordered flex items-center gap-2 pr-10 w-full">
+                <RiLock2Line className="opacity-60 shrink-0" />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="grow"
+                  className="grow w-full min-w-0"
                   autoComplete="new-password"
                   placeholder="Минимум 8 символов"
                   required

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-/* @plugin "daisyui"; */
 @plugin "daisyui" {
   themes: light --default;
 }
@@ -8,8 +7,13 @@
   --background: #ffffff;
   --foreground: #040200;
    --color-primary: #A705D0;
-  --color-secondary: #6AC1B7;
+  --color-secondary: #ffffff;
+  --font-playfair: "";
+   --font-lora: ""; 
 }
+
+.h-fashion { font-family: var(--font-playfair), serif; }
+.body-fashion { font-family: var(--font-lora), serif; }
 
 @theme {
   --breakpoint-xz: 20rem;      /* 320px - iPhone SE */
@@ -101,6 +105,28 @@ html, body {
 	opacity: .4;
 	z-index: -1;
 }
+.fon-mobile{
+	background-image: url('/fon/fon-mobile.webp');
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 0;
+}
+
+.fon-mobile:after{
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	background: #000;
+	opacity: .4;
+	z-index: -1;
+}
 
 
 
@@ -119,7 +145,6 @@ html, body {
   animation: ring 1.5s infinite;
   display: inline-block;
 }
-
 .striped-shining-button {
   position: relative;
   overflow: hidden;

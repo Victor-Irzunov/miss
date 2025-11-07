@@ -1,4 +1,4 @@
-// /app/api/girls/route.js — убираем жёсткий take; если ?limit не передан — отдаем всех
+// /app/api/girls/route.js — ПОЛНОСТЬЮ (добавлена категория и флаг победителя)
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -8,8 +8,6 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const q = (searchParams.get("q") || "").trim();
-    const limitParam = searchParams.get("limit");
-    const limit = limitParam ? Math.min(Math.max(Number(limitParam), 1), 1000) : null;
 
     const where = q
       ? {
@@ -21,10 +19,9 @@ export async function GET(req) {
         }
       : {};
 
-    const items = await prisma.girl.findMany({
+    const itemsRaw = await prisma.girl.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      ...(limit ? { take: limit } : {}), // ← без limit вернём всех
       select: {
         id: true,
         slug: true,
@@ -35,8 +32,18 @@ export async function GET(req) {
         mainImage: true,
         images: true,
         description: true,
+        category: true,
+        categoryWinner: { select: { category: true } }, // null | {category}
+        _count: { select: { votes: true } },
       },
     });
+
+    const items = itemsRaw.map((g) => ({
+      ...g,
+      votesCount: g._count?.votes ?? 0,
+      _count: undefined,
+      categoryWinner: g.categoryWinner ? true : false,
+    }));
 
     return NextResponse.json({ ok: true, items });
   } catch (e) {

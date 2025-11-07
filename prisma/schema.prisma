@@ -1,5 +1,4 @@
 // prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,20 +8,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum GirlCategory {
+  PLUS35
+  PLUS50
+  PLUS60
+  ONLINE
+}
+
 model Girl {
-  id          Int       @id @default(autoincrement())
-  slug        String    @unique
-  firstName   String
-  lastName    String
-  city        String
-  age         Int
-  description String    @db.MediumText   // <-- было String, стало MediumText
-  mainImage   String
-  images      Json
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             Int             @id @default(autoincrement())
+  slug           String          @unique
+  firstName      String
+  lastName       String
+  city           String
+  age            Int
+  description    String          @db.MediumText
+  mainImage      String
+  images         Json
+  videos         Json            @default("[]")
+  category       GirlCategory    @default(PLUS35)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  votes          Vote[] 
+  categoryWinner CategoryWinner?
 
   @@index([createdAt])
+  @@index([category])
 }
 
 model User {
@@ -32,4 +44,30 @@ model User {
   isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  votes     Vote[]
+}
+
+model Vote {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  girlId    Int
+  category  GirlCategory  @default(PLUS35)
+  createdAt DateTime      @default(now())
+
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  girl      Girl @relation(fields: [girlId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category], name: "userId_category_unique")
+  @@unique([userId, girlId], name: "userId_girlId")
+  @@index([girlId])
+  @@index([userId])
+}
+
+model CategoryWinner {
+  category  GirlCategory @id
+  girlId    Int          @unique
+  girl      Girl         @relation(fields: [girlId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }

@@ -1,4 +1,3 @@
-// /components/Form/FormLogin.jsx
 "use client";
 
 import { login } from "@/http/userAPI";
@@ -41,7 +40,7 @@ const LoginForm = ({ setIsActive, search }) => {
 
         setTimeout(() => {
           setIsActiveAlert(false);
-          if (data.isAdmin) router.push("/super-admin");
+          if (data.isAdmin) router.push("/admin");
           else if (search === "korzina") router.push("/korzina");
           else router.push("/");
         }, 500);
@@ -73,8 +72,18 @@ const LoginForm = ({ setIsActive, search }) => {
 
         {error ? (
           <div role="alert" className="alert alert-error mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>{error}</span>
           </div>
@@ -82,19 +91,19 @@ const LoginForm = ({ setIsActive, search }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* email */}
-          <div className="form-control">
+          <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Логин (почта)</span>
               <span className="label-text-alt text-gray-400">Обязательное поле</span>
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <RiMailLine className="opacity-60" />
+            <label className="input input-bordered flex items-center gap-2 w-full">
+              <RiMailLine className="opacity-60 shrink-0" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="grow"
+                className="grow w-full min-w-0"
                 autoComplete="email"
                 placeholder="name@example.com"
                 required
@@ -103,20 +112,20 @@ const LoginForm = ({ setIsActive, search }) => {
           </div>
 
           {/* password */}
-          <div className="form-control">
+          <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Пароль</span>
               <span className="label-text-alt text-gray-400">Обязательное поле</span>
             </label>
-            <div className="relative">
-              <label className="input input-bordered flex items-center gap-2 pr-10">
-                <RiLock2Line className="opacity-60" />
+            <div className="relative w-full">
+              <label className="input input-bordered flex items-center gap-2 pr-10 w-full">
+                <RiLock2Line className="opacity-60 shrink-0" />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="grow"
+                  className="grow w-full min-w-0"
                   autoComplete="current-password"
                   placeholder="Введите пароль"
                   required
@@ -134,7 +143,11 @@ const LoginForm = ({ setIsActive, search }) => {
           </div>
 
           <div className="pt-2">
-            <button type="submit" className="btn btn-primary w-full" disabled={isSubmitting}>
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? <span className="loading loading-spinner" /> : "Войти"}
             </button>
           </div>
@@ -151,8 +164,18 @@ const LoginForm = ({ setIsActive, search }) => {
       {isActiveAlert ? (
         <div className="toast toast-top toast-center">
           <div className="alert alert-success">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>Вы авторизованы!</span>
           </div>

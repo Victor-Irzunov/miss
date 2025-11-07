@@ -1,10 +1,9 @@
+// /jsconfig.json — СОЗДАЙ ФАЙЛ ПОЛНОСТЬЮ
 {
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "*"
-      ]
+      "@/*": ["*"]
     }
   }
 }

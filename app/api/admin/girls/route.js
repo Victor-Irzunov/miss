@@ -1,5 +1,5 @@
-// /app/api/admin/girls/route.js — CREATE/LIST с авто-уникализацией slug
-import { PrismaClient } from "@prisma/client";
+// /app/api/admin/girls/route.js
+import { PrismaClient, GirlCategory } from "@prisma/client";
 import { NextResponse } from "next/server";
 import multer from "multer";
 import fs from "fs";
@@ -15,10 +15,7 @@ const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadDir),
   filename: (_req, _file, cb) => cb(null, uuidv4() + ".webp"),
 });
-const upload = multer({
-  storage,
-  limits: { fileSize: 150 * 1024 },
-});
+const upload = multer({ storage, limits: { fileSize: 150 * 1024 } });
 
 function slugify(s) {
   return String(s || "")
@@ -29,7 +26,25 @@ function slugify(s) {
     .replace(/^-|-$/g, "");
 }
 
-// делает slug уникальным: base, base-2, base-3, ...
+// Нормализация и уникализация списка видео (принимаем JSON-строку или массив)
+function coerceVideos(input) {
+  try {
+    let arr = [];
+    if (Array.isArray(input)) {
+      arr = input;
+    } else if (typeof input === "string") {
+      // пришел JSON
+      arr = JSON.parse(input || "[]");
+    }
+    const cleaned = (Array.isArray(arr) ? arr : [])
+      .map((s) => String(s || "").trim())
+      .filter(Boolean);
+    return Array.from(new Set(cleaned));
+  } catch {
+    return [];
+  }
+}
+
 async function ensureUniqueSlug(base) {
   const root = slugify(base) || uuidv4();
   let candidate = root;
@@ -38,7 +53,7 @@ async function ensureUniqueSlug(base) {
     const exists = await prisma.girl.findFirst({ where: { slug: candidate } });
     if (!exists) return candidate;
     candidate = `${root}-${i++}`;
-    if (i > 200) return `${root}-${uuidv4().slice(0, 8)}`; // аварийный случай
+    if (i > 200) return `${root}-${uuidv4().slice(0, 8)}`;
   }
 }
 
@@ -53,6 +68,16 @@ export async function POST(req) {
     const description = pre.get("description") || "";
     const providedSlug = pre.get("slug") || "";
     const imagesJson = pre.get("imagesJson");
+
+    // ВИДЕО: поддержка videosJson (JSON-строка) и videos[] (многократные поля)
+    const videosJson = pre.get("videosJson");
+    const multipleVideos = pre.getAll("videos"); // если кто-то отправит как videos[]=...
+    const videos = multipleVideos?.length
+      ? coerceVideos(multipleVideos)
+      : coerceVideos(typeof videosJson === "string" ? videosJson : "[]");
+
+    const rawCategory = (pre.get("category") || "PLUS35").toString().toUpperCase();
+    const category = rawCategory in GirlCategory ? rawCategory : "PLUS35";
 
     let mainImage = "";
     let images = [];
@@ -89,7 +114,6 @@ export async function POST(req) {
         await fs.promises.writeFile(filePath, buf);
         images.push(`/uploads/${name}`);
       }
-
       if (!mainImage && images.length) mainImage = images[0];
     }
 
@@ -107,6 +131,8 @@ export async function POST(req) {
         description,
         mainImage: mainImage || "",
         images,
+        videos, // <— сохраняем ВСЕ ссылки
+        category,
       },
     });
 
@@ -120,6 +146,7 @@ export async function POST(req) {
 export async function GET() {
   const items = await prisma.girl.findMany({
     orderBy: { createdAt: "desc" },
+    include: { categoryWinner: true },
   });
   return NextResponse.json({ ok: true, items });
 }
