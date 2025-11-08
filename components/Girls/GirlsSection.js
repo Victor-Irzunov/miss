@@ -64,7 +64,7 @@ function GirlCard({ g }) {
       {/* НИЖНЯЯ ЧАСТЬ КАРТОЧКИ */}
       <div className="relative p-4 pt-2">
         <div className="relative -mt-10 flex items-center gap-3">
-          <div className="rounded-xl px-4 py-2 bg-linear-to-b from-[#ffd86b] via-[#d4af37] to-[#9f7a1c] text-black font-extrabold text-base shadow-[0_10px_30px_rgba(212,175,55,0.35)]">
+          <div className="rounded-xl px-4 py-2 bg-linear-to-b from-[#ffd86b] via-[#d4af37] to-[#9f7a1c] text-black font-extrabold sd:text-base xz:text-sm shadow-[0_10px_30px_rgba(212,175,55,0.35)]">
             {g.firstName?.toUpperCase()} {g.lastName?.toUpperCase()}
           </div>
           <div className="rounded-xl px-3 py-1 bg-white/90 text-black/80 text-xs font-semibold shadow">{g.city}</div>
