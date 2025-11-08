@@ -21,7 +21,7 @@ export const lora = Lora({
 const SITE_NAME = "Академия моды Марины Кабадарян";
 const PROJECT_NAME = "Премия красоты Женщина 2025";
 const BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") || "https://example.com";
+  process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") || "https://mkstyle.by/";
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
@@ -42,7 +42,7 @@ export const metadata = {
     "галерея",
   ],
   applicationName: SITE_NAME,
-  alternates: { canonical: "/" },
+  alternates: { canonical: "https://mkstyle.by/" },
   openGraph: {
     type: "website",
     url: BASE_URL,
