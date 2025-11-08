@@ -85,7 +85,7 @@ export default function FinalEventHero() {
 
 						<div className="sd:mt-4 xz:mt-2 xz:text-base sd:text-lg">
 							<div>в отеле «Ренессанс»</div>
-							<div className="mt-1">15 ноября</div>
+							<div className="mt-1">16 ноября</div>
 						</div>
 
 						<ul className="sd:mt-6 xz:mt-3 sd:space-y-3 xz:space-y-1 xz:text-base sd:text-lg">
