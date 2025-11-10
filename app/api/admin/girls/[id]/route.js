@@ -43,11 +43,8 @@ async function ensureUniqueSlugExcept(base, excludeId) {
 function coerceVideos(input) {
   try {
     let arr = [];
-    if (Array.isArray(input)) {
-      arr = input;
-    } else if (typeof input === "string") {
-      arr = JSON.parse(input || "[]");
-    }
+    if (Array.isArray(input)) arr = input;
+    else if (typeof input === "string") arr = JSON.parse(input || "[]");
     const cleaned = (Array.isArray(arr) ? arr : [])
       .map((s) => String(s || "").trim())
       .filter(Boolean);
@@ -68,12 +65,19 @@ export async function PUT(req, ctx) {
     const pre = await req.formData();
     const useJson = pre.get("imagesJson");
 
-    // ВИДЕО: поддержка videosJson и множественных полей videos[]
+    // YouTube
     const videosJson = pre.get("videosJson");
     const multipleVideos = pre.getAll("videos");
     const videos = multipleVideos?.length
       ? coerceVideos(multipleVideos)
       : coerceVideos(typeof videosJson === "string" ? videosJson : "[]");
+
+    // VK — НОВОЕ
+    const vkVideosJson = pre.get("vkVideosJson");
+    const multipleVk = pre.getAll("vkVideos");
+    const vkVideos = multipleVk?.length
+      ? coerceVideos(multipleVk)
+      : coerceVideos(typeof vkVideosJson === "string" ? vkVideosJson : "[]");
 
     const data = {
       firstName: pre.get("firstName") || undefined,
@@ -82,7 +86,8 @@ export async function PUT(req, ctx) {
       age: pre.get("age") ? Number(pre.get("age")) : undefined,
       description: pre.get("description") || undefined,
       slug: pre.get("slug") || undefined,
-      videos, // <— перезаписываем массив видео целиком
+      videos,   // перезаписываем массив YouTube
+      vkVideos, // перезаписываем массив VK
     };
 
     if (pre.has("category")) {

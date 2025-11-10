@@ -7,10 +7,11 @@ if (!globalThis.__prisma) globalThis.__prisma = prisma;
 
 export async function GET(_req, ctx) {
   try {
-    // ⬇️ ВАЖНО: в App Router `params` — Promise, его нужно await-нуть
-    const { slug = "" } = (ctx?.params && typeof ctx.params.then === "function")
-      ? (await ctx.params) || {}
-      : ctx?.params || {};
+    // ⬇️ В App Router params может быть промисом
+    const { slug = "" } =
+      (ctx?.params && typeof ctx.params.then === "function")
+        ? (await ctx.params) || {}
+        : ctx?.params || {};
 
     if (!slug) {
       return NextResponse.json({ ok: false, message: "slug required" }, { status: 400 });
@@ -38,11 +39,12 @@ export async function GET(_req, ctx) {
       description: girl.description,
       mainImage: girl.mainImage,
       images: Array.isArray(girl.images) ? girl.images : [],
-      videos: Array.isArray(girl.videos) ? girl.videos : [], // ✅ видео массивом
+      videos: Array.isArray(girl.videos) ? girl.videos : [],       // YouTube
+      vkVideos: Array.isArray(girl.vkVideos) ? girl.vkVideos : [], // ✅ VK
       category: girl.category,
       createdAt: girl.createdAt,
       updatedAt: girl.updatedAt,
-      votesCount: girl._count?.votes ?? 0, // ✅ количество голосов
+      votesCount: girl._count?.votes ?? 0,
     };
 
     return NextResponse.json({ ok: true, item }, { status: 200 });

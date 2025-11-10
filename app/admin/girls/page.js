@@ -13,7 +13,9 @@ import CKeditor from "@/components/Editor/CKeditor";
 import { uploadGalleryIfNeeded } from "@/lib/uploadGallery";
 import { slugify } from "@/lib/slugify";
 import VideoLinksFields from "@/components/Admin/VideoLinksFields";
+import VideoLinksVKFields from "@/components/Admin/VideoLinksVKFields";
 import { sanitizeVideoInputs } from "@/lib/youtube";
+import { sanitizeVkInputs } from "@/lib/vk";
 
 const CATS = [
   { label: "35+", value: "PLUS35" },
@@ -23,7 +25,13 @@ const CATS = [
 ];
 
 /* ---------- Панель одной участницы ---------- */
-function GirlPanel({ g, gallery, onGalleryChange, videos, onVideosChange, onSave, onDelete, onSetWinner }) {
+function GirlPanel({
+  g,
+  gallery, onGalleryChange,
+  videos, onVideosChange,
+  vkVideos, onVkVideosChange,
+  onSave, onDelete, onSetWinner
+}) {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -43,7 +51,7 @@ function GirlPanel({ g, gallery, onGalleryChange, videos, onVideosChange, onSave
     try {
       const values = await form.validateFields();
       await onSave(values);
-    } catch { }
+    } catch {}
   };
 
   const isWinner = Boolean(g?.categoryWinner);
@@ -93,10 +101,16 @@ function GirlPanel({ g, gallery, onGalleryChange, videos, onVideosChange, onSave
           <SortableUpload value={gallery} onChange={onGalleryChange} label="Добавить изображения" />
         </div>
 
-        {/* Видео — не обязательные, динамические поля */}
+        {/* Видео — YouTube */}
         <div className="mt-4">
           <p className="mb-1 text-sm text-gray-600">Видео YouTube (необязательно)</p>
           <VideoLinksFields value={videos} onChange={onVideosChange} />
+        </div>
+
+        {/* Видео — VK */}
+        <div className="mt-4">
+          <p className="mb-1 text-sm text-gray-600">Видео VK (необязательно)</p>
+          <VideoLinksVKFields value={vkVideos} onChange={onVkVideosChange} />
         </div>
 
         <div className="pt-4 mt-7 flex items-center gap-3">
@@ -166,55 +180,13 @@ export default function AdminGirlsPage() {
   /* ===== Создать ===== */
   const [createForm] = Form.useForm();
   const [createGallery, setCreateGallery] = useState([]);
-  const [createVideos, setCreateVideos] = useState([]); // [{id,url}]
+  const [createVideos, setCreateVideos] = useState([]);   // YouTube [{id,url}]
+  const [createVkVideos, setCreateVkVideos] = useState([]); // VK [{id,url}]
 
-  // const handleCreate = useCallback(async () => {
-  //   try {
-  //     const values = await createForm.validateFields();
-  //     const urls = await uploadGalleryIfNeeded(createGallery, "girls");
-  //     if (urls.length === 0) return msgApi.error("Загрузите хотя бы одно изображение");
-
-  //     // нормализуем видео
-  //     const rawVideos = (createVideos || [])
-  //       .map((v) => (typeof v === "string" ? v : v?.url))
-  //       .map((s) => String(s || "").trim());
-  //     const videosClean = sanitizeVideoInputs(rawVideos);
-
-  //     const fd = new FormData();
-  //     fd.append("firstName", values.firstName);
-  //     fd.append("lastName", values.lastName);
-  //     fd.append("city", values.city);
-  //     fd.append("age", String(values.age));
-  //     fd.append("description", values.description || "");
-  //     fd.append("category", values.category || "PLUS35");
-  //     const autoSlug = slugify(`${values.firstName}-${values.lastName}-${values.city}`);
-  //     fd.append("slug", autoSlug);
-  //     fd.append("imagesJson", JSON.stringify(urls));
-
-  //     // отправляем и JSON, и повторяющиеся поля videos[]=...
-  //     fd.append("videosJson", JSON.stringify(videosClean));
-  //     videosClean.forEach((u) => fd.append("videos", u));
-
-  //     const res = await fetch("/api/admin/girls", { method: "POST", body: fd });
-  //     if (!res.ok) throw new Error();
-
-  //     msgApi.success({ content: "✅ Участница добавлена", duration: 2 });
-  //     createForm.resetFields();
-  //     setCreateGallery([]);
-  //     setCreateVideos([]);
-  //     fetchList();
-  //   } catch {
-  //     msgApi.error("Ошибка добавления");
-  //   }
-  // }, [createForm, createGallery, createVideos, fetchList, msgApi]);
-
-
-  // внутри AdminGirlsPage
   const handleCreate = useCallback(async () => {
     try {
       const values = await createForm.validateFields();
 
-      // 1) Гарантируем нормальные строки
       const firstName = String(values.firstName || "").trim();
       const lastName = String(values.lastName || "").trim();
       const city = String(values.city || "").trim();
@@ -233,14 +205,16 @@ export default function AdminGirlsPage() {
         return msgApi.error("Загрузите хотя бы одно изображение");
       }
 
-      // 2) Нормализуем видео
+      // YouTube
       const rawVideos = (createVideos || [])
-        .map(v => (typeof v === "string" ? v : v?.url))
-        .map(s => String(s || "").trim())
-        .filter(Boolean);
+        .map(v => (typeof v === "string" ? v : v?.url));
       const videosClean = sanitizeVideoInputs(rawVideos);
 
-      // 3) Собираем FormData
+      // VK — нормализация домена и уникализация
+      const rawVk = (createVkVideos || [])
+        .map(v => (typeof v === "string" ? v : v?.url));
+      const vkVideosClean = sanitizeVkInputs(rawVk);
+
       const fd = new FormData();
       fd.append("firstName", firstName);
       fd.append("lastName", lastName);
@@ -249,25 +223,27 @@ export default function AdminGirlsPage() {
       fd.append("description", String(values.description || ""));
       fd.append("category", category);
 
-      // slug можно и не отправлять, но оставлю как у вас:
       const autoSlug = slugify(`${firstName}-${lastName}-${city}`);
       fd.append("slug", String(autoSlug || ""));
-
       fd.append("imagesJson", JSON.stringify(urls));
 
+      // YouTube
       fd.append("videosJson", JSON.stringify(videosClean));
       videosClean.forEach(u => fd.append("videos", u));
 
+      // VK
+      fd.append("vkVideosJson", JSON.stringify(vkVideosClean));
+      vkVideosClean.forEach(u => fd.append("vkVideos", u));
+
       const res = await fetch("/api/admin/girls", { method: "POST", body: fd });
 
-      // --- НОВОЕ: читаем ответ и показываем понятное сообщение ---
       let payloadText = "";
       let payloadJson = null;
       const ct = res.headers.get("content-type") || "";
       try {
         if (ct.includes("application/json")) payloadJson = await res.json();
         else payloadText = await res.text();
-      } catch { }
+      } catch {}
 
       if (!res.ok) {
         const reason =
@@ -282,24 +258,18 @@ export default function AdminGirlsPage() {
       createForm.resetFields();
       setCreateGallery([]);
       setCreateVideos([]);
+      setCreateVkVideos([]);
       fetchList();
     } catch (e) {
       console.error("handleCreate error", e);
       msgApi.error("Ошибка добавления");
     }
-  }, [createForm, createGallery, createVideos, fetchList, msgApi]);
-
-
-
-
-
-
-
-
+  }, [createForm, createGallery, createVideos, createVkVideos, fetchList, msgApi]);
 
   /* ===== Галереи/Видео по id ===== */
   const [galleries, setGalleries] = useState({});
-  const [videosById, setVideosById] = useState({}); // { [id]: [{id,url}] }
+  const [videosById, setVideosById] = useState({});   // YouTube { [id]: [{id,url}] }
+  const [vkById, setVkById] = useState({});          // VK      { [id]: [{id,url}] }
 
   const shallowEqualGalleries = (a, b) => {
     const ka = Object.keys(a);
@@ -338,6 +308,7 @@ export default function AdminGirlsPage() {
   useEffect(() => {
     const nextG = {};
     const nextV = {};
+    const nextVK = {};
     for (const g of list) {
       nextG[g.id] = (g.images || []).map((u, idx) => ({
         uid: `${g.id}-${idx}`,
@@ -345,10 +316,13 @@ export default function AdminGirlsPage() {
       }));
       const vids = Array.isArray(g.videos) ? g.videos : [];
       nextV[g.id] = vids.map((u, i) => ({ id: `${g.id}-v${i}`, url: String(u) }));
+      const vk = Array.isArray(g.vkVideos) ? g.vkVideos : [];
+      nextVK[g.id] = vk.map((u, i) => ({ id: `${g.id}-vk${i}`, url: String(u) }));
     }
 
     setGalleries((prev) => (shallowEqualGalleries(prev, nextG) ? prev : nextG));
     setVideosById((prev) => (shallowEqualVideos(prev, nextV) ? prev : nextV));
+    setVkById((prev) => (shallowEqualVideos(prev, nextVK) ? prev : nextVK));
   }, [list]);
 
   const setGalleryFor = useCallback((id, val) => {
@@ -365,6 +339,13 @@ export default function AdminGirlsPage() {
     });
   }, []);
 
+  const setVkFor = useCallback((id, val) => {
+    setVkById((p) => {
+      const next = { ...p, [id]: val };
+      return shallowEqualVideos(p, next) ? p : next;
+    });
+  }, []);
+
   /* ===== Сохранение/удаление ===== */
   const saveGirl = useCallback(
     async (id, values) => {
@@ -373,10 +354,11 @@ export default function AdminGirlsPage() {
         const urls = await uploadGalleryIfNeeded(gallery, "girls");
         if (urls.length === 0) return msgApi.error("Галерея не может быть пустой");
 
-        const rawVideos = (videosById[id] || [])
-          .map((v) => (typeof v === "string" ? v : v?.url))
-          .map((s) => String(s || "").trim());
+        const rawVideos = (videosById[id] || []).map(v => (typeof v === "string" ? v : v?.url));
         const videosClean = sanitizeVideoInputs(rawVideos);
+
+        const rawVk = (vkById[id] || []).map(v => (typeof v === "string" ? v : v?.url));
+        const vkClean = sanitizeVkInputs(rawVk);
 
         const fd = new FormData();
         if (values.firstName) fd.append("firstName", values.firstName);
@@ -391,9 +373,13 @@ export default function AdminGirlsPage() {
         fd.append("slug", s);
         fd.append("imagesJson", JSON.stringify(urls));
 
-        // и JSON, и повторяющиеся поля
+        // YouTube
         fd.append("videosJson", JSON.stringify(videosClean));
         videosClean.forEach((u) => fd.append("videos", u));
+
+        // VK
+        fd.append("vkVideosJson", JSON.stringify(vkClean));
+        vkClean.forEach((u) => fd.append("vkVideos", u));
 
         const res = await fetch(`/api/admin/girls/${id}`, {
           method: "PUT",
@@ -407,7 +393,7 @@ export default function AdminGirlsPage() {
         msgApi.error("Ошибка сохранения");
       }
     },
-    [galleries, videosById, fetchList, msgApi]
+    [galleries, videosById, vkById, fetchList, msgApi]
   );
 
   const deleteGirl = useCallback(
@@ -481,6 +467,8 @@ export default function AdminGirlsPage() {
               onGalleryChange={(arr) => setGalleryFor(g.id, arr)}
               videos={videosById[g.id] || []}
               onVideosChange={(arr) => setVideosFor(g.id, arr)}
+              vkVideos={vkById[g.id] || []}
+              onVkVideosChange={(arr) => setVkFor(g.id, arr)}
               onSave={(values) => saveGirl(g.id, values)}
               onDelete={() => deleteGirl(g.id)}
               onSetWinner={() => setWinner(g.id)}
@@ -488,7 +476,7 @@ export default function AdminGirlsPage() {
           ),
         };
       }),
-    [galleries, videosById, saveGirl, deleteGirl, setGalleryFor, setVideosFor, setWinner]
+    [galleries, videosById, vkById, saveGirl, deleteGirl, setGalleryFor, setVideosFor, setVkFor, setWinner]
   );
 
   return allowed ? (
@@ -553,6 +541,11 @@ export default function AdminGirlsPage() {
             <div className="mt-4">
               <p className="mb-1 text-sm text-white/70">Видео YouTube (необязательно)</p>
               <VideoLinksFields value={createVideos} onChange={setCreateVideos} />
+            </div>
+
+            <div className="mt-4">
+              <p className="mb-1 text-sm text-white/70">Видео VK (необязательно)</p>
+              <VideoLinksVKFields value={createVkVideos} onChange={setCreateVkVideos} />
             </div>
 
             <div className="pt-3">

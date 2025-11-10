@@ -1,4 +1,3 @@
-// /app/api/girls/route.js — ПОЛНОСТЬЮ (добавлена категория и флаг победителя)
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -33,6 +32,8 @@ export async function GET(req) {
         images: true,
         description: true,
         category: true,
+        videos: true,    // YouTube
+        vkVideos: true,  // ✅ VK
         categoryWinner: { select: { category: true } }, // null | {category}
         _count: { select: { votes: true } },
       },

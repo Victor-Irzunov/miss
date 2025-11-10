@@ -4,6 +4,7 @@ import VoteButton from "@/components/Vote/VoteButton";
 import { notFound } from "next/navigation";
 import { stripTags, truncateText } from "../../../lib/anitizeHtmlClient";
 import YouTubeLazy from "@/components/Video/YouTubeLazy";
+import VKVideoLazy from "@/components/Video/VKVideoLazy"; // 🔸 НОВОЕ
 
 /** Карточные ярлыки для категорий */
 const CAT_LABEL = {
@@ -65,6 +66,7 @@ export default async function GirlPage({ params }) {
   const images = Array.isArray(item.images) && item.images.length ? item.images : [item.mainImage];
   const catUI = CAT_LABEL[item.category] || "35+";
   const videos = Array.isArray(item.videos) ? item.videos.filter(Boolean) : [];
+  const vkVideos = Array.isArray(item.vkVideos) ? item.vkVideos.filter(Boolean) : []; // 🔸
 
   return (
     <main
@@ -116,13 +118,25 @@ export default async function GirlPage({ params }) {
           </div>
         </div>
 
-        {/* Видео — секция ниже карточки. Рендерим только если есть. */}
+        {/* YouTube */}
         {videos.length > 0 && (
           <section className="mt-12">
             <h2 className="text-xl font-bold mb-4">Видео</h2>
             <div className="grid grid-cols-1 sd:grid-cols-2 gap-6">
               {videos.map((u, idx) => (
-                <YouTubeLazy key={`${item.id}-v-${idx}`} url={u} title={`Видео ${idx + 1}: ${item.firstName} ${item.lastName}`} />
+                <YouTubeLazy key={`${item.id}-yt-${idx}`} url={u} title={`Видео ${idx + 1}: ${item.firstName} ${item.lastName}`} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* VK — НОВОЕ */}
+        {vkVideos.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xl font-bold mb-4">Видео VK</h2>
+            <div className="grid grid-cols-1 sd:grid-cols-2 gap-6">
+              {vkVideos.map((u, idx) => (
+                <VKVideoLazy key={`${item.id}-vk-${idx}`} url={u} title={`VK ${idx + 1}: ${item.firstName} ${item.lastName}`} />
               ))}
             </div>
           </section>
