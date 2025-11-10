@@ -64,16 +64,20 @@ function GirlCard({ g }) {
       {/* НИЖНЯЯ ЧАСТЬ КАРТОЧКИ */}
       <div className="relative p-4 pt-2">
         <div className="relative -mt-10 flex items-center gap-3">
-          <div className="rounded-xl sd:px-4 xz:px-2 py-2 bg-linear-to-b from-[#ffd86b] via-[#d4af37] to-[#9f7a1c] text-black font-extrabold sd:text-base xz:text-sm shadow-[0_10px_30px_rgba(212,175,55,0.35)]">
+          <div className="rounded-xl sd:px-4 xz:px-3 py-2 bg-linear-to-b from-[#ffd86b] via-[#d4af37] to-[#9f7a1c] text-black font-extrabold sd:text-base xz:text-sm shadow-[0_10px_30px_rgba(212,175,55,0.35)]">
             {g.firstName?.toUpperCase()} {g.lastName?.toUpperCase()}
           </div>
-          <div className="rounded-xl sd:px-3 xz:px-1.5 py-1 bg-white/90 text-black/80 text-xs font-semibold shadow">{g.city}</div>
-          <span className="ml-auto badge badge-outline badge-secondary">
-            {g.age} {yearsWord(g.age)}
-          </span>
+
+
         </div>
 
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-2 flex justify-between items-center gap-2">
+          <div className='flex space-x-3'>
+            <div className="rounded-lg sd:px-2 xz:px-1.5 py-1 bg-white/90 text-black/80 text-xs font-semibold shadow">{g.city}</div>
+            <span className="ml-auto badge badge-outline badge-secondary">
+              {g.age} {yearsWord(g.age)}
+            </span>
+          </div>
           <span className="badge badge-sm badge-outline border-white/30 text-white/90">{CAT_LABEL[g.category] || "35+"}</span>
           {g.categoryWinner && <span className="badge badge-sm bg-yellow-400 text-black font-bold">Победитель</span>}
         </div>

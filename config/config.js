@@ -11,7 +11,7 @@ const phoneNumbers = {
   phone3Link: "",
 
   // Соцсети (пока заглушки — позже замените реальными)
-  youtubeUrl: "https://www.youtube.com/@your_channel",
+  youtubeUrl: "https://www.youtube.com/@models_mkstyle",
   tiktokUrl: "https://www.tiktok.com/@your_account",
   instagramUrl: "https://www.instagram.com/women_mkstyle",
 };
