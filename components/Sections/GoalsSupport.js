@@ -62,7 +62,8 @@ export default function GoalsSupport() {
               </div>
 
               <ul className="mt-4 space-y-2 text-base sd:text-lg leading-relaxed">
-                <li>Академии моды Марины Кабадарян;</li>
+                <li>Академии моды Марины Кабадарян</li>
+                <li>Агенство моды и развития MK style</li>
                 <li>
                   <p className="font-semibold">Информационная поддержка:</p>
                   <p className="">ТНТ International</p>

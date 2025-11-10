@@ -82,9 +82,7 @@ export default function Home() {
                   <p className='text-2xl'>
                     Минск | Осень 2025
                   </p>
-                  <p className='text-4xl mt-3'>
-                    онлайн
-                  </p>
+                 
                 </div>
               </div>
               <div className=''>
