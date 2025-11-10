@@ -119,7 +119,7 @@ export default function WinnersShowcase() {
 	return (
 		<section
 			aria-label="Победительницы по категориям"
-			className="relative w-full my-20 py-20"
+			className="relative w-full sd:my-20 xz:my-6 py-20"
 		>
 			<div className="container mx-auto sd:px-0 xz:px-3">
 				{/* заголовок с «короной» сверху */}

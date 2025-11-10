@@ -114,7 +114,7 @@ export default function Home() {
 
       <EventHero />
 
-      <GoalsSupport />
+      {/* <GoalsSupport /> */}
 
       <TrustInvite />
 
@@ -124,13 +124,9 @@ export default function Home() {
 
       <AudienceOpportunities />
 
-      <PriceGeneralPartner />
+   
 
-      <PricePartner />
-
-      <PricePartnerPlus />
-
-      <PartnersWall />
+      {/* <PartnersWall /> */}
 
       <GirlsSection />
 

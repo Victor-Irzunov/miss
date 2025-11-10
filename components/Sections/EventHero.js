@@ -7,7 +7,7 @@ export default function EventHero() {
   const IMG_MOBILE = "/fon/fon1-mobile.webp";
 
   return (
-    <section aria-label="Анонс мероприятия" className="w-full relative" id='events'>
+    <section aria-label="Анонс мероприятия" className="w-full relative mb-20" id='events'>
       <div className="container mx-auto sd:px-0 xz:px-3">
         <div className="grid sd:grid-cols-2 gap-0 border rounded-3xl overflow-hidden sd:py-3.5 xz:py-0 sd:px-3.5 xz:px-0 border-white/10 bg-white/5">
           <div className="relative h-[48vh] sd:h-[72vh] rounded-3xl overflow-hidden">

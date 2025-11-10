@@ -49,7 +49,7 @@ function GirlPanel({ g, gallery, onGalleryChange, videos, onVideosChange, onSave
   const isWinner = Boolean(g?.categoryWinner);
 
   return (
-    <div className="rounded-2xl border border-violet-200 bg-violet-50/40 p-4">
+    <div className="rounded-2xl border border-violet-200 bg-transparent p-4">
       <Form form={form} layout="vertical" className="dark-antd-form">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item name="firstName" label="Имя" rules={[{ required: true }]}>
@@ -89,7 +89,7 @@ function GirlPanel({ g, gallery, onGalleryChange, videos, onVideosChange, onSave
         </div>
 
         <div className="mt-2">
-          <p className="mb-1 text-sm text-gray-600">Галерея (перетаскивание, первое — главное)</p>
+          <p className="mb-1 text-sm text-white">Галерея (перетаскивание, первое — главное)</p>
           <SortableUpload value={gallery} onChange={onGalleryChange} label="Добавить изображения" />
         </div>
 
