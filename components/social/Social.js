@@ -37,7 +37,7 @@ const Social = () => {
       </a>
 
       <a
-        href="https://www.instagram.com/"
+        href={`${phoneNumbers.instagramUrl}`}
         target="_blank"
         rel="noreferrer"
         className="my-2 lg:tooltip text-white"

@@ -13,7 +13,7 @@ const phoneNumbers = {
   // Соцсети (пока заглушки — позже замените реальными)
   youtubeUrl: "https://www.youtube.com/@your_channel",
   tiktokUrl: "https://www.tiktok.com/@your_account",
-  instagramUrl: "https://www.instagram.com/your_account",
+  instagramUrl: "https://www.instagram.com/women_mkstyle",
 };
 
 export default phoneNumbers;

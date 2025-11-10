@@ -95,10 +95,10 @@ export default function Home() {
 
 
           <div className='flex justify-center pb-9 sd:-mt-20 xz:mt-0'>
-            <a href={`https://t.me/${phoneNumbers.phone1Link}`} target="_blank" className='my-1 lg:tooltip' data-tip="telegram">
+            <a href={`${phoneNumbers.instagramUrl}`} target="_blank" className='my-1 lg:tooltip' data-tip="instagram">
               <div className='bg-black/45 rounded-lg py-5 px-4 flex items-center space-x-3'>
                 <div className='bg-white/10 backdrop-blur-md p-2 rounded-s-sm'>
-                  <Image src='/svg/telegram-white.svg' alt='Телеграмм' width={50} height={50} />
+                  <Image src='/svg/instagram3.svg' alt='instagram' width={50} height={50} />
                 </div>
                 <p className='text-white/80 text-xl'>
                   За подробностями пишите в директ
