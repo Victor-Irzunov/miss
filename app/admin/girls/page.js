@@ -43,7 +43,7 @@ function GirlPanel({ g, gallery, onGalleryChange, videos, onVideosChange, onSave
     try {
       const values = await form.validateFields();
       await onSave(values);
-    } catch {}
+    } catch { }
   };
 
   const isWinner = Boolean(g?.categoryWinner);
@@ -168,45 +168,134 @@ export default function AdminGirlsPage() {
   const [createGallery, setCreateGallery] = useState([]);
   const [createVideos, setCreateVideos] = useState([]); // [{id,url}]
 
+  // const handleCreate = useCallback(async () => {
+  //   try {
+  //     const values = await createForm.validateFields();
+  //     const urls = await uploadGalleryIfNeeded(createGallery, "girls");
+  //     if (urls.length === 0) return msgApi.error("Загрузите хотя бы одно изображение");
+
+  //     // нормализуем видео
+  //     const rawVideos = (createVideos || [])
+  //       .map((v) => (typeof v === "string" ? v : v?.url))
+  //       .map((s) => String(s || "").trim());
+  //     const videosClean = sanitizeVideoInputs(rawVideos);
+
+  //     const fd = new FormData();
+  //     fd.append("firstName", values.firstName);
+  //     fd.append("lastName", values.lastName);
+  //     fd.append("city", values.city);
+  //     fd.append("age", String(values.age));
+  //     fd.append("description", values.description || "");
+  //     fd.append("category", values.category || "PLUS35");
+  //     const autoSlug = slugify(`${values.firstName}-${values.lastName}-${values.city}`);
+  //     fd.append("slug", autoSlug);
+  //     fd.append("imagesJson", JSON.stringify(urls));
+
+  //     // отправляем и JSON, и повторяющиеся поля videos[]=...
+  //     fd.append("videosJson", JSON.stringify(videosClean));
+  //     videosClean.forEach((u) => fd.append("videos", u));
+
+  //     const res = await fetch("/api/admin/girls", { method: "POST", body: fd });
+  //     if (!res.ok) throw new Error();
+
+  //     msgApi.success({ content: "✅ Участница добавлена", duration: 2 });
+  //     createForm.resetFields();
+  //     setCreateGallery([]);
+  //     setCreateVideos([]);
+  //     fetchList();
+  //   } catch {
+  //     msgApi.error("Ошибка добавления");
+  //   }
+  // }, [createForm, createGallery, createVideos, fetchList, msgApi]);
+
+
+  // внутри AdminGirlsPage
   const handleCreate = useCallback(async () => {
     try {
       const values = await createForm.validateFields();
-      const urls = await uploadGalleryIfNeeded(createGallery, "girls");
-      if (urls.length === 0) return msgApi.error("Загрузите хотя бы одно изображение");
 
-      // нормализуем видео
+      // 1) Гарантируем нормальные строки
+      const firstName = String(values.firstName || "").trim();
+      const lastName = String(values.lastName || "").trim();
+      const city = String(values.city || "").trim();
+      const ageNum = Number(values.age);
+      const category = String(values.category || "PLUS35").toUpperCase();
+
+      if (!firstName || !lastName || !city) {
+        return msgApi.error("Имя/Фамилия/Город — обязательны");
+      }
+      if (!Number.isFinite(ageNum) || ageNum < 16 || ageNum > 100) {
+        return msgApi.error("Возраст должен быть числом 16–100");
+      }
+
+      const urls = await uploadGalleryIfNeeded(createGallery, "girls");
+      if (!Array.isArray(urls) || urls.length === 0) {
+        return msgApi.error("Загрузите хотя бы одно изображение");
+      }
+
+      // 2) Нормализуем видео
       const rawVideos = (createVideos || [])
-        .map((v) => (typeof v === "string" ? v : v?.url))
-        .map((s) => String(s || "").trim());
+        .map(v => (typeof v === "string" ? v : v?.url))
+        .map(s => String(s || "").trim())
+        .filter(Boolean);
       const videosClean = sanitizeVideoInputs(rawVideos);
 
+      // 3) Собираем FormData
       const fd = new FormData();
-      fd.append("firstName", values.firstName);
-      fd.append("lastName", values.lastName);
-      fd.append("city", values.city);
-      fd.append("age", String(values.age));
-      fd.append("description", values.description || "");
-      fd.append("category", values.category || "PLUS35");
-      const autoSlug = slugify(`${values.firstName}-${values.lastName}-${values.city}`);
-      fd.append("slug", autoSlug);
+      fd.append("firstName", firstName);
+      fd.append("lastName", lastName);
+      fd.append("city", city);
+      fd.append("age", String(ageNum));
+      fd.append("description", String(values.description || ""));
+      fd.append("category", category);
+
+      // slug можно и не отправлять, но оставлю как у вас:
+      const autoSlug = slugify(`${firstName}-${lastName}-${city}`);
+      fd.append("slug", String(autoSlug || ""));
+
       fd.append("imagesJson", JSON.stringify(urls));
 
-      // отправляем и JSON, и повторяющиеся поля videos[]=...
       fd.append("videosJson", JSON.stringify(videosClean));
-      videosClean.forEach((u) => fd.append("videos", u));
+      videosClean.forEach(u => fd.append("videos", u));
 
       const res = await fetch("/api/admin/girls", { method: "POST", body: fd });
-      if (!res.ok) throw new Error();
+
+      // --- НОВОЕ: читаем ответ и показываем понятное сообщение ---
+      let payloadText = "";
+      let payloadJson = null;
+      const ct = res.headers.get("content-type") || "";
+      try {
+        if (ct.includes("application/json")) payloadJson = await res.json();
+        else payloadText = await res.text();
+      } catch { }
+
+      if (!res.ok) {
+        const reason =
+          (payloadJson?.message && String(payloadJson.message)) ||
+          (payloadText && payloadText.slice(0, 400)) ||
+          `HTTP ${res.status}`;
+        msgApi.error(`Ошибка добавления: ${reason}`);
+        return;
+      }
 
       msgApi.success({ content: "✅ Участница добавлена", duration: 2 });
       createForm.resetFields();
       setCreateGallery([]);
       setCreateVideos([]);
       fetchList();
-    } catch {
+    } catch (e) {
+      console.error("handleCreate error", e);
       msgApi.error("Ошибка добавления");
     }
   }, [createForm, createGallery, createVideos, fetchList, msgApi]);
+
+
+
+
+
+
+
+
 
   /* ===== Галереи/Видео по id ===== */
   const [galleries, setGalleries] = useState({});

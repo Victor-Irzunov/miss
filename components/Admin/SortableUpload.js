@@ -214,7 +214,7 @@ export default function SortableUpload({ value = [], onChange, label = "Загр
 
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-2 flex sd:flex-row xz:flex-col items-center gap-2">
         <input
           ref={inputRef}
           type="file"
