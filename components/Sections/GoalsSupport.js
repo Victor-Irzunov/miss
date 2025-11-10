@@ -65,9 +65,8 @@ export default function GoalsSupport() {
                 <li>Академии моды Марины Кабадарян;</li>
                 <li>
                   <p className="font-semibold">Информационная поддержка:</p>
-                  <p className="">Еврора TV</p>
-                  <p className=""><span className="block">программа</span>
-                  «Fashion is our Profession»</p>
+                  <p className="">ТНТ International</p>
+                 
                 </li>
               </ul>
             </div>
@@ -81,19 +80,7 @@ export default function GoalsSupport() {
               height={96}
               className="h-20 w-auto sd:h-28 object-contain"
             />
-            <Image
-              src="/logo/europa-tv.svg"
-              alt="Europa Plus TV"
-              width={140}
-              height={48}
-              className="h-10 w-auto sd:h-16 object-contain"
-            />
-            <div className="text-left">
-              <div className="text-2xl sd:text-3xl leading-tight font-semibold">
-                Fashion <span className="opacity-70 text-base align-top">is</span> our
-              </div>
-              <div className="text-3xl sd:text-4xl font-extrabold">Profession</div>
-            </div>
+           
           </div>
         </div>
       </div>

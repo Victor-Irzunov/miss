@@ -114,7 +114,7 @@ export default function Home() {
 
       <EventHero />
 
-      {/* <GoalsSupport /> */}
+      <GoalsSupport />
 
       <TrustInvite />
 
