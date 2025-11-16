@@ -139,7 +139,7 @@ export default function GirlsSection() {
 
   return (
     <section id="girls" className="relative py-16 body-fashion" itemScope itemType="https://schema.org/ItemList">
-      <RunningText2 />
+      {/* <RunningText2 /> */}
 
       {/* ======= ЛОГО СПРАВА ВВЕРХУ ======= */}
       <div className="container mx-auto">

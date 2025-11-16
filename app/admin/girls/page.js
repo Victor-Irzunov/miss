@@ -576,9 +576,9 @@ export default function AdminGirlsPage() {
           <Link href="/admin" className="btn btn-outline border-white/40 text-white hover:bg-white/10">
             Главная страница администратора
           </Link>
-          <Link href="/admin/votes" className="btn btn-outline border-white/40 text-white hover:bg-white/10">
+          {/* <Link href="/admin/votes" className="btn btn-outline border-white/40 text-white hover:bg-white/10">
             Голосование
-          </Link>
+          </Link> */}
         </div>
       </div>
 

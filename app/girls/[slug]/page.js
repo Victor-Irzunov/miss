@@ -109,12 +109,12 @@ export default async function GirlPage({ params }) {
               dangerouslySetInnerHTML={{ __html: item.description }}
             />
 
-            <VoteButton
+            {/* <VoteButton
               girlId={item.id}
               initialTotal={item.votesCount || 0}
               category={item.category}
               fullName={`${item.firstName} ${item.lastName}`}
-            />
+            /> */}
           </div>
         </div>
 
