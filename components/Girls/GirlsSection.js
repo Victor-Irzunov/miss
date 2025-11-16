@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { stripTags, truncateText, yearsWord } from "@/lib/text";
-import RunningText2 from "../RunningText/RunningText2";
+// import RunningText2 from "../RunningText/RunningText2";
 
 const CAT_LABEL = {
   PLUS35: "35+",
